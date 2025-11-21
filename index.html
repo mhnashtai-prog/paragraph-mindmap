@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Linking Words — Dual View Mind-Map & Text Mode</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- Fullscreen black-glass background -->
+  <div id="app-container">
+
+    <!-- Header + Mode Toggle -->
+    <header>
+      <h1>Linking Words Explorer</h1>
+
+      <div id="mode-toggle">
+        <button id="mindmap-btn" class="active">Mind-Map</button>
+        <button id="text-btn">Text</button>
+      </div>
+    </header>
+
+    <!-- Card Navigation -->
+    <nav id="navigator">
+      <button id="prev-card" class="nav-arrow">←</button>
+      <span id="card-label">Card 1</span>
+      <button id="next-card" class="nav-arrow">→</button>
+    </nav>
+
+    <!-- Mind-Map Mode -->
+    <section id="mindmap-mode">
+
+      <!-- Central Cloud -->
+      <div id="cloud" class="glass-cloud">
+        <h2 id="cloud-title"></h2>
+        <p id="cloud-sentence"></p>
+      </div>
+
+      <!-- Linkers + Clause Nodes (injected by JS) -->
+      <div id="nodes-layer"></div>
+    </section>
+
+    <!-- Text Mode -->
+    <section id="text-mode" class="hidden">
+      <div id="text-panel" class="glass-text">
+        <div class="text-header">
+          <label for="text-card-select">Select card:</label>
+          <select id="text-card-select"></select>
+        </div>
+
+        <p id="full-paragraph"></p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- JS -->
+  <script src="script.js"></script>
+</body>
+</html>
