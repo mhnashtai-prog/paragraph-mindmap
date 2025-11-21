@@ -1,0 +1,443 @@
+/* ------------------------------
+   Global / Layout
+------------------------------ */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+body {
+  font-size: 1rem;
+  color: #e5e7eb;
+  /* Full-screen black-glass background */
+  background:
+    radial-gradient(circle at top, #111827 0, #020617 55%, #000000 100%);
+}
+
+/* Main app container */
+#app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem clamp(1.5rem, 3vw, 3rem);
+}
+
+/* ------------------------------
+   Header & Mode Toggle
+------------------------------ */
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #f9fafb;
+}
+
+/* Toggle: Mind-Map / Text */
+#mode-toggle {
+  display: inline-flex;
+  padding: 0.2rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at top left, #111827, #020617);
+  box-shadow:
+    0 0 0 1px rgba(148, 163, 184, 0.25),
+    0 18px 45px rgba(15, 23, 42, 0.8);
+}
+
+#mode-toggle button {
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 0.9rem;
+  padding: 0.3rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.18s ease-out;
+}
+
+#mode-toggle button.active {
+  color: #e5e7eb;
+  background: radial-gradient(circle at top, #1f2937, #020617 65%);
+  box-shadow:
+    0 0 0 1px rgba(59, 130, 246, 0.8),
+    0 0 16px rgba(59, 130, 246, 0.8);
+}
+
+/* ------------------------------
+   Card Navigation (Arrows + Label)
+------------------------------ */
+
+#navigator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+
+.nav-arrow {
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: radial-gradient(circle at top left, #020617, #020617);
+  color: #e5e7eb;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow:
+    0 10px 25px rgba(15, 23, 42, 0.8),
+    0 0 0 1px rgba(15, 23, 42, 0.9);
+  transition: all 0.16s ease-out;
+}
+
+.nav-arrow:hover {
+  box-shadow:
+    0 0 0 1px rgba(59, 130, 246, 0.7),
+    0 0 16px rgba(59, 130, 246, 0.7);
+  transform: translateY(-1px);
+}
+
+#card-label {
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #cbd5f5;
+}
+
+/* ------------------------------
+   Mind-Map Mode
+------------------------------ */
+
+#mindmap-mode {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  padding: 1.5rem 0;
+}
+
+/* Central "cloud" with topic sentence */
+.glass-cloud {
+  position: relative;
+  padding: 1.4rem 2.6rem;
+  border-radius: 999px;
+  max-width: 420px;
+  text-align: center;
+
+  background: radial-gradient(circle at 15% 10%, #1e293b, #020617 65%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(15, 23, 42, 0.9);
+}
+
+/* Color accent on the cloud border will be handled inline via JS if desired */
+
+#cloud-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #e5e7eb;
+}
+
+#cloud-sentence {
+  margin: 0;
+  font-size: 0.98rem;
+  color: #e5e7eb;
+}
+
+/* Layer for nodes (linkers + clauses) */
+#nodes-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* nodes re-enable pointer-events individually */
+}
+
+/* Each node (linker + clause) */
+.node-wrapper {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 210px;
+  text-align: center;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  z-index: 10;
+}
+
+.node-wrapper.dragging {
+  cursor: grabbing;
+}
+
+.clause-bubble {
+  font-size: 0.8rem;
+  line-height: 1.3;
+  margin-bottom: 0.3rem;
+  color: #e5e7eb;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+
+  background: radial-gradient(circle at top left, #020617, #020617);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+
+  box-shadow:
+    0 12px 25px rgba(0, 0, 0, 0.9),
+    0 0 10px rgba(15, 23, 42, 0.9);
+
+  opacity: 0;
+  transform: translateY(4px);
+  transition: all 0.18s ease-out;
+  white-space: normal;
+}
+
+.node-wrapper.active .clause-bubble {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Pill for linking word */
+.link-pill {
+  border-radius: 999px;
+  border: 2px solid #3b82f6;
+  background: radial-gradient(circle at top left, #020617, #020617);
+  color: #e5e7eb;
+  padding: 0.25rem 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgba(15, 23, 42, 0.9),
+    0 0 14px rgba(59, 130, 246, 0.85);
+  transition: all 0.15s ease-out;
+  user-select: none;
+}
+
+.node-wrapper:hover .link-pill {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow:
+    0 0 0 1px rgba(59, 130, 246, 0.9),
+    0 0 18px rgba(59, 130, 246, 0.95);
+}
+
+/* Default radial positions around cloud (JS assigns these classes) */
+
+.pos-top {
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.pos-top-left {
+  top: 20%;
+  left: 18%;
+  transform: translate(-50%, -50%);
+}
+
+.pos-top-right {
+  top: 20%;
+  right: 18%;
+  transform: translate(50%, -50%);
+}
+
+.pos-left {
+  top: 50%;
+  left: 10%;
+  transform: translate(-50%, -50%);
+}
+
+.pos-right {
+  top: 50%;
+  right: 10%;
+  transform: translate(50%, -50%);
+}
+
+.pos-bottom {
+  bottom: 10%;
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
+
+.pos-bottom-left {
+  bottom: 18%;
+  left: 18%;
+  transform: translate(-50%, 50%);
+}
+
+.pos-bottom-right {
+  bottom: 18%;
+  right: 18%;
+  transform: translate(50%, 50%);
+}
+
+.pos-mid-top-left {
+  top: 32%;
+  left: 8%;
+  transform: translate(-50%, -50%);
+}
+
+.pos-mid-top-right {
+  top: 32%;
+  right: 8%;
+  transform: translate(50%, -50%);
+}
+
+.pos-mid-bottom-left {
+  bottom: 26%;
+  left: 8%;
+  transform: translate(-50%, 50%);
+}
+
+.pos-mid-bottom-right {
+  bottom: 26%;
+  right: 8%;
+  transform: translate(50%, 50%);
+}
+
+/* ------------------------------
+   Text Mode
+------------------------------ */
+
+.hidden {
+  display: none;
+}
+
+#text-mode {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1rem 0 0.5rem;
+}
+
+/* Glass text panel */
+.glass-text {
+  width: 100%;
+  max-width: 850px;
+  padding: 1.3rem 1.6rem 1.4rem;
+  border-radius: 1.4rem;
+
+  background: radial-gradient(circle at 10% 0, #020617, #020617);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(15, 23, 42, 0.9);
+}
+
+/* Header within text mode (label + select) */
+.text-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
+}
+
+.text-header label {
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+#text-card-select {
+  background: radial-gradient(circle at top left, #020617, #020617);
+  color: #e5e7eb;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  padding: 0.25rem 0.9rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow:
+    0 14px 34px rgba(15, 23, 42, 0.9),
+    0 0 0 1px rgba(15, 23, 42, 0.95);
+}
+
+/* Full paragraph text */
+#full-paragraph {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #e5e7eb;
+}
+
+/* Linkers in paragraph as thin neon-outline pills (Option A) */
+.link-pill.inline {
+  display: inline-block;
+  border-radius: 999px;
+  border: 2px solid #3b82f6;
+  padding: 0.05rem 0.5rem;
+  margin: 0 0.05rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #e5e7eb;
+  background: transparent;
+  box-shadow:
+    0 0 0 1px rgba(15, 23, 42, 0.9),
+    0 0 10px rgba(59, 130, 246, 0.85);
+}
+
+/* ------------------------------
+   Responsiveness
+------------------------------ */
+
+@media (max-width: 900px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #navigator {
+    margin-bottom: 1.1rem;
+  }
+
+  .glass-cloud {
+    max-width: 360px;
+    padding-inline: 2.2rem;
+  }
+}
+
+@media (max-width: 700px) {
+  #app-container {
+    padding-inline: 1.2rem;
+  }
+
+  #mindmap-mode {
+    min-height: 360px;
+  }
+
+  .node-wrapper {
+    max-width: 170px;
+  }
+
+  .glass-text {
+    padding-inline: 1.2rem;
+  }
+}
